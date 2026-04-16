@@ -52,7 +52,7 @@ export default function App() {
   return (
     <div style={{ display: "flex", height: "100vh", background: C.bg, color: C.text, fontFamily: "system-ui" }}>
       <div style={{ width: 240, background: C.surface, borderRight: `1px solid ${C.border}`, padding: 20 }}>
-        <h2 style={{ color: C.gold, fontSize: 22, marginBottom: 40 }}>CareIQ <span style={{fontSize:10, opacity:0.5}}>v1.3</span></h2>
+        <h2 style={{ color: C.gold, fontSize: 22, marginBottom: 40 }}>CareIQ <span style={{fontSize:10, opacity:0.5}}>v1.4</span></h2>
         {NAV_ITEMS.map(item => (
           <div 
             key={item.id}
@@ -113,8 +113,7 @@ function NotesManager({ apiKey, onAdd }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `JSON only: {resident_name, observation, mood}. Input: ${input}` }] }],
-          generationConfig: { responseMimeType: "application/json" }
+          contents: [{ parts: [{ text: `Extract info from this care note. Return ONLY a raw JSON object with keys: resident_name, observation, and mood. No other text. Input: ${input}` }] }]
         })
       });
 
@@ -124,7 +123,14 @@ function NotesManager({ apiKey, onAdd }) {
       }
 
       const data = await res.json();
-      setAiPreview(JSON.parse(data.candidates[0].content.parts[0].text));
+      const textResponse = data.candidates[0].content.parts[0].text;
+      
+      // Safety check to remove any extra text the AI might send back
+      const jsonStart = textResponse.indexOf('{');
+      const jsonEnd = textResponse.lastIndexOf('}') + 1;
+      const cleanJson = textResponse.substring(jsonStart, jsonEnd);
+      
+      setAiPreview(JSON.parse(cleanJson));
     } catch (err) {
       alert(`AI System Message: ${err.message}`);
       setAiPreview({ resident_name: "Manual Entry", observation: input, mood: "Neutral" });
