@@ -52,7 +52,7 @@ export default function App() {
   return (
     <div style={{ display: "flex", height: "100vh", background: C.bg, color: C.text, fontFamily: "system-ui" }}>
       <div style={{ width: 240, background: C.surface, borderRight: `1px solid ${C.border}`, padding: 20 }}>
-        <h2 style={{ color: C.gold, fontSize: 22, marginBottom: 40 }}>CareIQ <span style={{fontSize:10, opacity:0.5}}>v1.4</span></h2>
+        <h2 style={{ color: C.gold, fontSize: 22, marginBottom: 40 }}>CareIQ <span style={{fontSize:10, opacity:0.5}}>v1.5</span></h2>
         {NAV_ITEMS.map(item => (
           <div 
             key={item.id}
@@ -108,7 +108,8 @@ function NotesManager({ apiKey, onAdd }) {
     if (!input) return;
     setLoading(true);
     try {
-      const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      // Changed back to v1beta to support Gemini 1.5 Flash
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,7 +126,6 @@ function NotesManager({ apiKey, onAdd }) {
       const data = await res.json();
       const textResponse = data.candidates[0].content.parts[0].text;
       
-      // Safety check to remove any extra text the AI might send back
       const jsonStart = textResponse.indexOf('{');
       const jsonEnd = textResponse.lastIndexOf('}') + 1;
       const cleanJson = textResponse.substring(jsonStart, jsonEnd);
