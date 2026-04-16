@@ -155,7 +155,7 @@ const aiCall = async (system, msg, tok=1000) => {
   if (!GEMINI_KEY) throw new Error("NO_API_KEY");
   const prompt = `${system}\n\nIMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation. Just the raw JSON object.\n\n${msg}`;
   const isNewFormat = GEMINI_KEY.startsWith("AQ.");
-  const baseUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
+const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
   const url = isNewFormat ? baseUrl : `${baseUrl}?key=${GEMINI_KEY}`;
   const headers = { "Content-Type": "application/json" };
   if (isNewFormat) headers["Authorization"] = `Bearer ${GEMINI_KEY}`;
